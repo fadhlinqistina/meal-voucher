@@ -193,4 +193,32 @@
     </div>
 </div>
 
+<!-- ===== SWEETALERT ===== -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<?php if(session()->getFlashdata('error')): ?>
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Login Failed!',
+        text: '<?= session()->getFlashdata('error') ?>',
+        confirmButtonColor: '#ef4444',
+        confirmButtonText: 'Try Again'
+    });
+</script>
+<?php endif; ?>
+
+<?php if(session()->getFlashdata('success')): ?>
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: '<?= session()->getFlashdata('success') ?>',
+        confirmButtonColor: '#1a4975',
+        timer: 3000,
+        showConfirmButton: true
+    });
+</script>
+<?php endif; ?>
+
 <?= $this->endSection() ?>

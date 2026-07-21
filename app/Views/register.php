@@ -255,4 +255,36 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<!-- ===== SWEETALERT ===== -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<?php if(session()->getFlashdata('success')): ?>
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Registration Successful!',
+        text: '<?= session()->getFlashdata('success') ?>',
+        confirmButtonColor: '#1a4975',
+        confirmButtonText: 'Login Now',
+        timer: 4000
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '/login';
+        }
+    });
+</script>
+<?php endif; ?>
+
+<?php if(session()->getFlashdata('errors')): ?>
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed!',
+        html: `<?php foreach(session()->getFlashdata('errors') as $error): ?><div>- <?= $error ?></div><?php endforeach; ?>`,
+        confirmButtonColor: '#ef4444',
+        confirmButtonText: 'Try Again'
+    });
+</script>
+<?php endif; ?>
+
 <?= $this->endSection() ?>

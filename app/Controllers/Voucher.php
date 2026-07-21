@@ -173,4 +173,62 @@ class Voucher extends BaseController
         
         return view('vendor_vouchers', $data);
     }
+
+    /**
+     * ADD THIS METHOD - Performance test for SHA-256 vs SHA-512
+     * Run by visiting: /voucher/performance-test
+     */
+    public function performanceTest()
+    {
+        // Only allow admin to run this test
+        if (session('role') != 'admin') {
+            return redirect()->to('/');
+        }
+        
+        // Test data
+        $voucher = 'VCH' . uniqid();
+        $student = 'STU' . rand(100, 999);
+        $vendor = 'VENDOR' . rand(1, 5);
+        $amount = rand(5, 25) . '.00';
+        $iterations = 100; // Number of hashes to generate per algorithm
+        
+        // ===== SHA-256 TEST =====
+        $startSha256 = microtime(true);
+        $hash256 = '';
+        for ($i = 0; $i < $iterations; $i++) {
+            $hash256 = hash('sha256', $voucher . $student . $vendor . $amount);
+        }
+        $endSha256 = microtime(true);
+        $timeSha256 = ($endSha256 - $startSha256) / $iterations; // Average per hash
+        
+        // ===== SHA-512 TEST =====
+        $startSha512 = microtime(true);
+        $hash512 = '';
+        for ($i = 0; $i < $iterations; $i++) {
+            $hash512 = hash('sha512', $voucher . $student . $vendor . $amount);
+        }
+        $endSha512 = microtime(true);
+        $timeSha512 = ($endSha512 - $startSha512) / $iterations; // Average per hash
+        
+        // ===== RESULTS =====
+        $data = [
+            'iterations' => $iterations,
+            'sha256' => [
+                'time' => number_format($timeSha256 * 1000, 4) . ' ms',
+                'hash' => $hash256,
+                'length' => strlen($hash256),
+                'security' => 'High'
+            ],
+            'sha512' => [
+                'time' => number_format($timeSha512 * 1000, 4) . ' ms',
+                'hash' => $hash512,
+                'length' => strlen($hash512),
+                'security' => 'Very High'
+            ],
+            'optimal' => ($timeSha256 < $timeSha512) ? 'SHA-256' : 'SHA-512',
+            'time_diff' => number_format(($timeSha512 - $timeSha256) * 1000, 4) . ' ms'
+        ];
+        
+        return view('performance_test', $data);
+    }
 }

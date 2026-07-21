@@ -2,56 +2,280 @@
 <?= $this->section('content') ?>
 
 <style>
-    /* Custom Styles for Student Dashboard */
-    .summary-card {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        padding: 15px;
+    /* ===== BACKGROUND ===== */
+    body {
+        background-color: #081225 !important;
+        background-image: 
+            radial-gradient(circle at 10% 0%, rgba(49, 130, 206, 0.25) 0%, transparent 40%),
+            radial-gradient(circle at 90% 10%, rgba(0, 163, 196, 0.2) 0%, transparent 40%),
+            radial-gradient(circle at 50% 100%, rgba(26, 54, 93, 0.6) 0%, transparent 60%) !important;
+        background-attachment: fixed !important;
+        color: #e2e8f0;
+    }
+
+    .dash-title {
+        color: #ffffff !important;
+        text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        letter-spacing: 0.5px;
+    }
+
+    .dash-date-pill {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #f8fafc !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .dash-date-pill i {
+        color: #00a3c4 !important;
+    }
+
+    .card-modern {
+        background: #ffffff;
+        border: none !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    /* ===== STATS CARDS ===== */
+    .stat-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px 18px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    }
+    
+    .stat-card .stat-icon {
+        font-size: 28px;
+        margin-bottom: 8px;
+        display: inline-block;
+    }
+    
+    .stat-card .stat-label {
+        font-size: 12px;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+    
+    .stat-card .stat-number {
+        font-size: 28px;
+        font-weight: 800;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    /* ============================================ */
+    /* ===== VOUCHER CARD - BORDER THEME ===== */
+    /* ============================================ */
+    .voucher-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 16px;
+        text-align: center;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        height: 100%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        border-width: 3px;
+        border-style: solid;
     }
     
-    .summary-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    .voucher-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0,0,0,0.12);
     }
     
+    /* Active Voucher - Green Border */
+    .voucher-card.active {
+        border-color: #10b981;
+    }
+    
+    .voucher-card.active:hover {
+        border-color: #059669;
+        box-shadow: 0 12px 35px rgba(16, 185, 129, 0.15);
+    }
+    
+    /* Used Voucher - Grey Border */
+    .voucher-card.used {
+        border-color: #9ca3af;
+        opacity: 0.75;
+    }
+    
+    .voucher-card.used:hover {
+        border-color: #6b7280;
+        box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+    }
+    
+    /* Expired Voucher - Red Border */
+    .voucher-card.expired {
+        border-color: #ef4444;
+        opacity: 0.8;
+    }
+    
+    .voucher-card.expired:hover {
+        border-color: #dc2626;
+        box-shadow: 0 12px 35px rgba(239, 68, 68, 0.12);
+    }
+    
+    .voucher-card .qr-container {
+        background: #f8fafc;
+        padding: 8px;
+        border-radius: 12px;
+        display: inline-block;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .voucher-card .qr-container img {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+    }
+    
+    /* Badge on cards */
+    .badge-status {
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 10px;
+        font-weight: 700;
+        display: inline-block;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    
+    .badge-unused {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .badge-used {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+    
+    .badge-expired {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .voucher-card code {
+        background: #f1f5f9;
+        color: #1a365d;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 11px;
+    }
+    
+    .voucher-card .info-box {
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .voucher-card .info-box.info {
+        background: #eff6ff;
+        color: #1e40af;
+        border: 1px solid #bfdbfe;
+    }
+    
+    .voucher-card .info-box.success {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+    
+    .voucher-card .info-box.danger {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+    }
+    
+    .voucher-card .info-box.warning {
+        background: #fffbeb;
+        color: #92400e;
+        border: 1px solid #fcd34d;
+    }
+    
+    .voucher-card .btn-outline-voucher {
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 12px;
+        padding: 6px 12px;
+        transition: all 0.3s;
+        width: 100%;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        color: #1a365d;
+    }
+    
+    .voucher-card .btn-outline-voucher:hover {
+        background: #1a365d;
+        color: white;
+        border-color: #1a365d;
+    }
+    
+    .voucher-card .btn-outline-voucher:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    
+    .voucher-card .btn-outline-voucher:disabled:hover {
+        background: #f8fafc;
+        color: #1a365d;
+        border-color: #e2e8f0;
+    }
+    
+    /* ===== TABS ===== */
     .nav-tabs-custom {
         border-bottom: 2px solid #e9ecef;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
         display: flex;
         flex-wrap: wrap;
-        gap: 5px;
+        gap: 4px;
     }
     
     .nav-tabs-custom .nav-link {
         border: none;
         color: #6c757d;
         font-weight: 600;
-        padding: 10px 20px;
+        font-size: 13px;
+        padding: 8px 16px;
         transition: all 0.3s ease;
-        border-radius: 12px;
+        border-radius: 10px;
         background: transparent;
         cursor: pointer;
     }
     
     .nav-tabs-custom .nav-link:hover {
         color: #667eea;
-        background: rgba(102, 126, 234, 0.1);
+        background: rgba(102, 126, 234, 0.08);
     }
     
     .nav-tabs-custom .nav-link.active {
         color: #667eea;
-        background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+        background: rgba(102, 126, 234, 0.12);
         border-bottom: 3px solid #667eea;
     }
     
     .sort-select {
-        border-radius: 12px;
-        border: 2px solid #e0e0e0;
-        padding: 8px 15px;
-        font-size: 14px;
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        padding: 6px 14px;
+        font-size: 13px;
         background: white;
+        height: 38px;
     }
     
     .sort-select:focus {
@@ -59,129 +283,123 @@
         outline: none;
     }
     
-    .voucher-card {
-        background: rgba(255, 255, 255, 0.95);
-        transition: all 0.3s ease;
-        border-radius: 24px;
+    .search-box {
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        padding: 8px 16px;
+        font-size: 13px;
+        background: #f8fafc;
+        width: 100%;
+        transition: all 0.3s;
     }
     
-    .voucher-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    .search-box:focus {
+        border-color: #667eea;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(102,126,234,0.08);
+        outline: none;
+    }
+    
+    .search-box::placeholder {
+        color: #a0aec0;
     }
     
     .empty-state {
-        padding: 60px 20px;
+        padding: 40px 20px;
         text-align: center;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 24px;
+        background: #ffffff;
+        border-radius: 16px;
     }
     
     .empty-state i {
-        font-size: 64px;
+        font-size: 48px;
         color: #cbd5e1;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
     
-    .input-group-text {
-        border-radius: 12px 0 0 12px;
-        border: 2px solid #e0e0e0;
-        border-right: none;
-        background: white;
+    .voucher-card .vendor-label {
+        color: #6c757d;
+        font-size: 11px;
     }
     
-    #searchVoucher {
-        border-radius: 0 12px 12px 0;
-        border: 2px solid #e0e0e0;
-        border-left: none;
+    .voucher-card .vendor-name {
+        color: #1a365d;
+        font-weight: 700;
+        font-size: 13px;
     }
     
-    #searchVoucher:focus {
-        border-color: #667eea;
-        box-shadow: none;
+    .voucher-card .amount-text {
+        color: #059669;
+        font-weight: 700;
+        font-size: 14px;
     }
     
-    code {
-        background: #f1f5f9;
-        padding: 4px 8px;
-        border-radius: 8px;
-        font-size: 12px;
-    }
-    
-    .bg-light {
-        background-color: #f8f9fa !important;
-    }
-    
-    .alert-info {
-        background-color: #e3f2fd;
-        border: none;
-        border-radius: 8px;
-    }
-    
-    .alert-danger {
-        background-color: #fee2e2;
-        border: none;
-        border-radius: 8px;
-    }
-    
-    .alert-secondary {
-        background-color: #f3f4f6;
-        border: none;
-        border-radius: 8px;
-    }
-    
-    .opacity-75 {
-        opacity: 0.75;
-    }
-    
-    .badge-status {
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 12px;
+    .voucher-card .expiry-text {
         font-weight: 600;
-        display: inline-block;
+        font-size: 12px;
     }
     
-    .badge-unused {
-        background: #10b981;
-        color: white;
+    .voucher-card .expiry-text.expired {
+        color: #dc2626;
     }
     
-    .badge-used {
-        background: #ef4444;
-        color: white;
+    .voucher-card .expiry-text.valid {
+        color: #4b5563;
     }
     
-    .badge-expired {
-        background: #f59e0b;
-        color: white;
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .stat-card .stat-number {
+            font-size: 22px;
+        }
+        
+        .stat-card {
+            padding: 14px 12px;
+        }
+        
+        .voucher-card .qr-container img {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .nav-tabs-custom .nav-link {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+        
+        .sort-select {
+            font-size: 12px;
+            padding: 4px 10px;
+            height: 34px;
+        }
     }
     
-    .qr-container {
-        background: white;
-        padding: 10px;
-        border-radius: 16px;
-        display: inline-block;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    @media (max-width: 480px) {
+        .voucher-card {
+            padding: 12px;
+        }
+        
+        .voucher-card .qr-container img {
+            width: 70px;
+            height: 70px;
+        }
     }
 </style>
 
-<div class="fade-in-up">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <h2 class="text-white fw-bold">
-            <i class="fas fa-ticket-alt"></i> My Vouchers
-        </h2>
-        <div class="d-flex gap-2">
-            <button class="btn btn-light btn-sm" onclick="window.location.reload()">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
+<div class="fade-in-up w-100">
+    
+    <!-- ===== HEADER ===== -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold m-0 dash-title">
+            <i class="fas fa-ticket-alt me-2"></i> My Vouchers
+        </h4>
+        <div class="fw-medium px-4 py-2 rounded-pill dash-date-pill" style="font-size: 0.85rem;">
+            <i class="fas fa-calendar-alt me-2"></i> <?= date('d M Y') ?>
         </div>
     </div>
 
-    <!-- Summary Cards -->
     <?php 
-        // Calculate statistics - FIXED
+        // Calculate statistics
         $totalVouchers = count($vouchers);
         $totalValue = 0;
         $totalRedeemed = 0;
@@ -197,7 +415,6 @@
                 $totalRedeemed += $v['amount'];
                 $totalUsed++;
             } else {
-                // Check if unused voucher is expired
                 $isExpired = strtotime($v['expiry_date']) < strtotime($today);
                 if($isExpired) {
                     $totalExpired++;
@@ -206,49 +423,47 @@
                 }
             }
         }
-        
-        // Debug log (will appear in browser console)
-        $debugStats = "Total: $totalVouchers, Active: $totalActive, Used: $totalUsed, Expired: $totalExpired";
     ?>
-    
+
+    <!-- ===== STATS CARDS ===== -->
     <div class="row g-3 mb-4">
-        <div class="col-md-3 col-6">
-            <div class="summary-card text-center">
-                <div class="mb-2">
-                    <i class="fas fa-ticket-alt fa-2x" style="color: #667eea"></i>
+        <div class="col-xl-3 col-md-6 col-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #3182ce;">
+                    <i class="fas fa-ticket-alt"></i>
                 </div>
-                <h6 class="text-muted mb-1">Total Vouchers</h6>
-                <h3 class="fw-bold mb-0" style="color: #667eea"><?= $totalVouchers ?></h3>
+                <div class="stat-label">Total Vouchers</div>
+                <div class="stat-number" style="color: #1a365d;"><?= $totalVouchers ?></div>
             </div>
         </div>
-        
-        <div class="col-md-3 col-6">
-            <div class="summary-card text-center">
-                <div class="mb-2">
-                    <i class="fas fa-ring fa-2x" style="color: #f59e0b"></i>
+
+        <div class="col-xl-3 col-md-6 col-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #dd6b20;">
+                    <i class="fas fa-ring"></i>
                 </div>
-                <h6 class="text-muted mb-1">Total Value Received</h6>
-                <h3 class="fw-bold mb-0 text-warning">RM <?= number_format($totalValue, 2) ?></h3>
+                <div class="stat-label">Total Value</div>
+                <div class="stat-number" style="color: #dd6b20;">RM <?= number_format($totalValue, 0) ?></div>
             </div>
         </div>
-        
-        <div class="col-md-3 col-6">
-            <div class="summary-card text-center">
-                <div class="mb-2">
-                    <i class="fas fa-check-circle fa-2x" style="color: #10b981"></i>
+
+        <div class="col-xl-3 col-md-6 col-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #38a169;">
+                    <i class="fas fa-check-circle"></i>
                 </div>
-                <h6 class="text-muted mb-1">Redeemed Value</h6>
-                <h3 class="fw-bold mb-0 text-success">RM <?= number_format($totalRedeemed, 2) ?></h3>
+                <div class="stat-label">Redeemed Value</div>
+                <div class="stat-number" style="color: #2f855a;">RM <?= number_format($totalRedeemed, 0) ?></div>
             </div>
         </div>
-        
-        <div class="col-md-3 col-6">
-            <div class="summary-card text-center">
-                <div class="mb-2">
-                    <i class="fas fa-clock fa-2x" style="color: #ef4444"></i>
+
+        <div class="col-xl-3 col-md-6 col-6">
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #e53e3e;">
+                    <i class="fas fa-clock"></i>
                 </div>
-                <h6 class="text-muted mb-1">Expired Vouchers</h6>
-                <h3 class="fw-bold mb-0 text-danger"><?= $totalExpired ?></h3>
+                <div class="stat-label">Expired</div>
+                <div class="stat-number" style="color: #c53030;"><?= $totalExpired ?></div>
             </div>
         </div>
     </div>
@@ -257,12 +472,14 @@
         <div class="empty-state">
             <i class="fas fa-inbox"></i>
             <h5 class="text-muted">No vouchers found</h5>
-            <p class="text-muted">You don't have any vouchers yet. Contact your administrator.</p>
+            <p class="text-muted small">You don't have any vouchers yet. Contact your administrator.</p>
         </div>
     <?php else: ?>
         
-        <!-- Tabs and Filters -->
+        <!-- ===== FILTERS & SEARCH ===== -->
         <div class="card-modern p-4">
+            
+            <!-- Tabs & Sort -->
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
                 <ul class="nav nav-tabs-custom" id="voucherTab" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -272,75 +489,71 @@
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" data-filter="active" onclick="filterVouchers('active')">
-                            <i class="fas fa-circle" style="color: #10b981"></i> Active (<?= $totalActive ?>)
+                            <i class="fas fa-circle" style="color: #10b981;"></i> Active (<?= $totalActive ?>)
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" data-filter="used" onclick="filterVouchers('used')">
-                            <i class="fas fa-check-circle" style="color: #6c757d"></i> Used (<?= $totalUsed ?>)
+                            <i class="fas fa-check-circle" style="color: #6c757d;"></i> Used (<?= $totalUsed ?>)
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" data-filter="expired" onclick="filterVouchers('expired')">
-                            <i class="fas fa-hourglass-end" style="color: #ef4444"></i> Expired (<?= $totalExpired ?>)
+                            <i class="fas fa-hourglass-end" style="color: #ef4444;"></i> Expired (<?= $totalExpired ?>)
                         </button>
                     </li>
                 </ul>
                 
-                <div class="d-flex gap-2">
-                    <select id="sortBy" class="sort-select" onchange="sortVouchers()">
-                        <option value="date_desc">Latest First</option>
-                        <option value="date_asc">Oldest First</option>
-                        <option value="amount_desc">Highest Value</option>
-                        <option value="amount_asc">Lowest Value</option>
-                        <option value="vendor_asc">Vendor A-Z</option>
-                        <option value="expiry_asc">Expiring Soon</option>
-                    </select>
-                </div>
+                <select id="sortBy" class="sort-select" onchange="sortVouchers()">
+                    <option value="date_desc">Latest First</option>
+                    <option value="date_asc">Oldest First</option>
+                    <option value="amount_desc">Highest Value</option>
+                    <option value="amount_asc">Lowest Value</option>
+                    <option value="vendor_asc">Vendor A-Z</option>
+                    <option value="expiry_asc">Expiring Soon</option>
+                </select>
             </div>
             
             <!-- Search Bar -->
             <div class="mb-3">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0">
-                        <i class="fas fa-search text-muted"></i>
-                    </span>
-                    <input type="text" id="searchVoucher" class="form-control border-start-0" 
+                <div class="position-relative">
+                    <i class="fas fa-search position-absolute" style="left: 14px; top: 50%; transform: translateY(-50%); color: #a0aec0;"></i>
+                    <input type="text" id="searchVoucher" class="search-box" 
                            placeholder="Search by voucher code or vendor name..." 
+                           style="padding-left: 40px;"
                            onkeyup="searchVouchers()">
                 </div>
             </div>
             
-            <!-- Vouchers Grid -->
+            <!-- ===== VOUCHERS GRID ===== -->
             <div id="vouchersContainer">
                 <div class="row g-3" id="vouchersGrid">
-                    <!-- Vouchers will be rendered here by JavaScript -->
+                    <!-- Rendered by JavaScript -->
                 </div>
             </div>
             
-            <!-- No Results Message -->
-            <div id="noResults" class="text-center py-5" style="display: none;">
-                <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                <p class="text-muted">No vouchers match your search criteria</p>
+            <!-- No Results -->
+            <div id="noResults" class="text-center py-4" style="display: none;">
+                <i class="fas fa-search fa-2x text-muted mb-2"></i>
+                <p class="text-muted small">No vouchers match your search criteria</p>
             </div>
+            
         </div>
         
     <?php endif; ?>
 </div>
 
+<!-- ============================================ -->
+<!-- ===== JAVASCRIPT ===== -->
+<!-- ============================================ -->
 <script>
-// Vouchers data from PHP
 const vouchersData = <?= json_encode($vouchers) ?>;
 let currentFilter = 'all';
 let currentSort = 'date_desc';
 let currentSearch = '';
 
-// Helper function to check if voucher is expired - FIXED
 function isVoucherExpired(voucher) {
-    // Used vouchers are not considered expired for display
-    if (voucher.status === 'used') {
-        return false;
-    }
+    if (voucher.status === 'used') return false;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const expiryDate = new Date(voucher.expiry_date);
@@ -348,207 +561,31 @@ function isVoucherExpired(voucher) {
     return expiryDate < today;
 }
 
-// Helper function to get voucher status for filtering - FIXED
 function getVoucherFilterStatus(voucher) {
-    // Check if used first
-    if (voucher.status === 'used') {
-        return 'used';
-    }
-    // Then check if expired
-    if (isVoucherExpired(voucher)) {
-        return 'expired';
-    }
-    // Otherwise it's active
+    if (voucher.status === 'used') return 'used';
+    if (isVoucherExpired(voucher)) return 'expired';
     return 'active';
 }
 
-// Filter vouchers based on current filter
 function filterVouchers(filter) {
     currentFilter = filter;
-    
-    // Update active tab
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
-        if(link.getAttribute('data-filter') === filter) {
-            link.classList.add('active');
-        }
+        if (link.dataset.filter === filter) link.classList.add('active');
     });
-    
     renderVouchers();
 }
 
-// Sort vouchers
 function sortVouchers() {
-    const sortSelect = document.getElementById('sortBy');
-    currentSort = sortSelect.value;
+    currentSort = document.getElementById('sortBy').value;
     renderVouchers();
 }
 
-// Search vouchers
 function searchVouchers() {
-    const searchInput = document.getElementById('searchVoucher');
-    currentSearch = searchInput.value.toLowerCase();
+    currentSearch = document.getElementById('searchVoucher').value.toLowerCase();
     renderVouchers();
 }
 
-// Main render function
-function renderVouchers() {
-    let filteredVouchers = [...vouchersData];
-    
-    // Debug - log all vouchers status
-    console.log('All vouchers:', vouchersData.map(v => ({
-        code: v.voucher_code,
-        status: v.status,
-        expiry: v.expiry_date,
-        isExpired: isVoucherExpired(v),
-        filterStatus: getVoucherFilterStatus(v)
-    })));
-    
-    // Apply filter
-    filteredVouchers = filteredVouchers.filter(voucher => {
-        const filterStatus = getVoucherFilterStatus(voucher);
-        if (currentFilter === 'all') return true;
-        return filterStatus === currentFilter;
-    });
-    
-    // Log filtered count
-    console.log(`Filter: ${currentFilter}, Count: ${filteredVouchers.length}`);
-    
-    // Apply search
-    if (currentSearch) {
-        filteredVouchers = filteredVouchers.filter(voucher => {
-            return (voucher.voucher_code && voucher.voucher_code.toLowerCase().includes(currentSearch)) ||
-                   (voucher.vendor_name && voucher.vendor_name.toLowerCase().includes(currentSearch)) ||
-                   (voucher.vendor_id && voucher.vendor_id.toLowerCase().includes(currentSearch));
-        });
-    }
-    
-    // Apply sort
-    filteredVouchers.sort((a, b) => {
-        switch(currentSort) {
-            case 'date_desc':
-                return new Date(b.created_at || b.generated_at || 0) - new Date(a.created_at || a.generated_at || 0);
-            case 'date_asc':
-                return new Date(a.created_at || a.generated_at || 0) - new Date(b.created_at || b.generated_at || 0);
-            case 'amount_desc':
-                return parseFloat(b.amount) - parseFloat(a.amount);
-            case 'amount_asc':
-                return parseFloat(a.amount) - parseFloat(b.amount);
-            case 'vendor_asc':
-                const vendorA = (a.vendor_name || a.vendor_id || '').toLowerCase();
-                const vendorB = (b.vendor_name || b.vendor_id || '').toLowerCase();
-                return vendorA.localeCompare(vendorB);
-            case 'expiry_asc':
-                return new Date(a.expiry_date) - new Date(b.expiry_date);
-            default:
-                return 0;
-        }
-    });
-    
-    // Render HTML
-    const container = document.getElementById('vouchersGrid');
-    const noResults = document.getElementById('noResults');
-    
-    if (filteredVouchers.length === 0) {
-        container.innerHTML = '';
-        noResults.style.display = 'block';
-        return;
-    }
-    
-    noResults.style.display = 'none';
-    
-    let html = '';
-    filteredVouchers.forEach(voucher => {
-        const isExpired = isVoucherExpired(voucher);
-        const filterStatus = getVoucherFilterStatus(voucher);
-        
-        let statusBadge = '';
-        let statusClass = '';
-        let instructionText = '';
-        
-        if (isExpired && voucher.status !== 'used') {
-            statusBadge = '<span class="badge-status badge-expired"><i class="fas fa-hourglass-end"></i> Expired</span>';
-            instructionText = '<div class="alert alert-danger py-1 px-2 mb-2" style="font-size: 11px;"><i class="fas fa-ban"></i> <strong>EXPIRED!</strong> This voucher is no longer valid.</div>';
-            statusClass = 'opacity-75';
-        } else if (voucher.status === 'used') {
-            statusBadge = '<span class="badge-status badge-used"><i class="fas fa-check-circle"></i> Used</span>';
-            const usedDate = voucher.used_at ? new Date(voucher.used_at).toLocaleDateString('en-GB') : 'Unknown';
-            instructionText = `<div class="alert alert-secondary py-1 px-2 mb-2" style="font-size: 11px;"><i class="fas fa-check-circle"></i> Redeemed on ${usedDate}</div>`;
-            statusClass = 'opacity-75';
-        } else {
-            statusBadge = '<span class="badge-status badge-unused"><i class="fas fa-circle"></i> Active</span>';
-            const vendorName = voucher.vendor_name || voucher.vendor_id || 'the vendor';
-            instructionText = `<div class="alert alert-info py-1 px-2 mb-2" style="font-size: 11px;"><i class="fas fa-info-circle"></i> Show this QR code at <strong>${escapeHtml(vendorName)}</strong> counter</div>`;
-        }
-        
-        const vendorDisplay = voucher.vendor_name || voucher.vendor_id || 'Unknown Vendor';
-        const expiryClass = (isExpired && voucher.status !== 'used') ? 'text-danger' : '';
-        const expiryIcon = (isExpired && voucher.status !== 'used') ? '<i class="fas fa-exclamation-circle ms-1"></i>' : '';
-        
-        html += `
-            <div class="col-md-6 col-lg-4">
-                <div class="card-modern voucher-card p-3 text-center h-100 ${statusClass}">
-                    <div class="text-end mb-2">
-                        ${statusBadge}
-                    </div>
-                    
-                    <div class="mb-2 p-2 bg-light rounded-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted"><i class="fas fa-store"></i> Redeemable at:</small>
-                            <span class="fw-bold text-primary">${escapeHtml(vendorDisplay)}</span>
-                        </div>
-                        ${voucher.vendor_code ? `
-                        <div class="d-flex justify-content-between align-items-center mt-1">
-                            <small class="text-muted"><i class="fas fa-qrcode"></i> Vendor Code:</small>
-                            <small class="text-muted">${escapeHtml(voucher.vendor_code)}</small>
-                        </div>
-                        ` : ''}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <small class="text-muted">Voucher Code</small>
-                        <h6 class="fw-bold mb-0"><code>${escapeHtml(voucher.voucher_code)}</code></h6>
-                    </div>
-                    
-                    <div class="qr-container mb-3">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?data=${voucher.hash_code}&size=150" 
-                             alt="QR Code" style="width: 120px; height: 120px;">
-                    </div>
-                    
-                    <div class="row g-2 mb-2">
-                        <div class="col-6">
-                            <div class="bg-light rounded-3 p-1">
-                                <small class="text-muted d-block">Amount</small>
-                                <span class="fw-bold text-success">RM ${parseFloat(voucher.amount).toFixed(2)}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="bg-light rounded-3 p-1">
-                                <small class="text-muted d-block">Expires</small>
-                                <small class="fw-bold ${expiryClass}">
-                                    ${new Date(voucher.expiry_date).toLocaleDateString('en-GB')}
-                                    ${expiryIcon}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    ${instructionText}
-                    
-                    <button onclick="downloadQR('${voucher.hash_code}', '${voucher.voucher_code}')" 
-                            class="btn btn-sm ${(isExpired && voucher.status !== 'used') ? 'btn-secondary' : 'btn-outline-primary'} w-100"
-                            ${(isExpired && voucher.status !== 'used') ? 'disabled' : ''}>
-                        <i class="fas fa-download"></i> Download QR
-                    </button>
-                </div>
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
-}
-
-// Escape HTML to prevent XSS
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -556,7 +593,6 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Download QR function
 function downloadQR(hash, code) {
     const url = `https://api.qrserver.com/v1/create-qr-code/?data=${hash}&size=200`;
     const link = document.createElement('a');
@@ -575,16 +611,147 @@ function downloadQR(hash, code) {
     });
 }
 
-// Initial render
+function renderVouchers() {
+    let filtered = [...vouchersData];
+    
+    filtered = filtered.filter(v => {
+        const status = getVoucherFilterStatus(v);
+        if (currentFilter === 'all') return true;
+        return status === currentFilter;
+    });
+    
+    if (currentSearch) {
+        filtered = filtered.filter(v => {
+            return (v.voucher_code && v.voucher_code.toLowerCase().includes(currentSearch)) ||
+                   (v.vendor_name && v.vendor_name.toLowerCase().includes(currentSearch)) ||
+                   (v.vendor_id && v.vendor_id.toLowerCase().includes(currentSearch));
+        });
+    }
+    
+    filtered.sort((a, b) => {
+        switch(currentSort) {
+            case 'date_desc':
+                return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+            case 'date_asc':
+                return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+            case 'amount_desc':
+                return parseFloat(b.amount) - parseFloat(a.amount);
+            case 'amount_asc':
+                return parseFloat(a.amount) - parseFloat(b.amount);
+            case 'vendor_asc':
+                return (a.vendor_name || a.vendor_id || '').localeCompare(b.vendor_name || b.vendor_id || '');
+            case 'expiry_asc':
+                return new Date(a.expiry_date) - new Date(b.expiry_date);
+            default:
+                return 0;
+        }
+    });
+    
+    const container = document.getElementById('vouchersGrid');
+    const noResults = document.getElementById('noResults');
+    
+    if (filtered.length === 0) {
+        container.innerHTML = '';
+        noResults.style.display = 'block';
+        return;
+    }
+    
+    noResults.style.display = 'none';
+    
+    let html = '';
+    filtered.forEach(v => {
+        const isExpired = isVoucherExpired(v);
+        const status = getVoucherFilterStatus(v);
+        
+        let badge = '', infoBox = '', cardClass = '';
+        let expiryColor = 'valid';
+        
+        if (isExpired && v.status !== 'used') {
+            badge = '<span class="badge-status badge-expired"><i class="fas fa-hourglass-end"></i> Expired</span>';
+            infoBox = '<div class="info-box danger"><i class="fas fa-ban"></i> <strong>EXPIRED!</strong> No longer valid</div>';
+            cardClass = 'expired';
+            expiryColor = 'expired';
+        } else if (v.status === 'used') {
+            const usedDate = v.used_at ? new Date(v.used_at).toLocaleDateString('en-GB') : 'Unknown';
+            badge = '<span class="badge-status badge-used"><i class="fas fa-check-circle"></i> Used</span>';
+            infoBox = `<div class="info-box success"><i class="fas fa-check-circle"></i> Redeemed on ${usedDate}</div>`;
+            cardClass = 'used';
+            expiryColor = 'valid';
+        } else {
+            badge = '<span class="badge-status badge-unused"><i class="fas fa-circle"></i> Active</span>';
+            const vendor = v.vendor_name || v.vendor_id || 'the vendor';
+            infoBox = `<div class="info-box info"><i class="fas fa-info-circle"></i> Show QR at <strong>${escapeHtml(vendor)}</strong></div>`;
+            cardClass = 'active';
+            expiryColor = 'valid';
+        }
+        
+        const vendorDisplay = v.vendor_name || v.vendor_id || 'Unknown';
+        const expiryIcon = (isExpired && v.status !== 'used') ? '<i class="fas fa-exclamation-circle ms-1"></i>' : '';
+        
+        html += `
+            <div class="col-md-6 col-lg-4">
+                <div class="voucher-card ${cardClass}">
+                    <div class="d-flex justify-content-end mb-2">
+                        ${badge}
+                    </div>
+                    
+                    <div class="mb-2 p-2 rounded-3" style="background: #f8fafc; border: 1px solid #edf2f7;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="vendor-label"><i class="fas fa-store"></i> Redeemable at:</small>
+                            <span class="vendor-name">${escapeHtml(vendorDisplay)}</span>
+                        </div>
+                        ${v.vendor_code ? `
+                        <div class="d-flex justify-content-between align-items-center mt-1">
+                            <small class="vendor-label"><i class="fas fa-qrcode"></i> Vendor Code:</small>
+                            <small style="color: #6c757d;">${escapeHtml(v.vendor_code)}</small>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="mb-2">
+                        <small class="vendor-label">Voucher Code</small>
+                        <h6 class="fw-bold mb-0"><code>${escapeHtml(v.voucher_code)}</code></h6>
+                    </div>
+                    
+                    <div class="qr-container mb-2">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?data=${v.hash_code}&size=100" alt="QR">
+                    </div>
+                    
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <div class="rounded-3 p-1" style="background: #f8fafc;">
+                                <small class="vendor-label d-block">Amount</small>
+                                <span class="amount-text">RM ${parseFloat(v.amount).toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="rounded-3 p-1" style="background: #f8fafc;">
+                                <small class="vendor-label d-block">Expires</small>
+                                <span class="expiry-text ${expiryColor}">
+                                    ${new Date(v.expiry_date).toLocaleDateString('en-GB')}
+                                    ${expiryIcon}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${infoBox}
+                    
+                    <button onclick="downloadQR('${v.hash_code}', '${v.voucher_code}')" 
+                            class="btn-outline-voucher"
+                            ${(isExpired && v.status !== 'used') ? 'disabled' : ''}>
+                        <i class="fas fa-download"></i> Download QR
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     renderVouchers();
-    
-    // Debug: Log voucher counts
-    console.log('Total vouchers:', vouchersData.length);
-    const activeCount = vouchersData.filter(v => !isVoucherExpired(v) && v.status === 'unused').length;
-    const usedCount = vouchersData.filter(v => v.status === 'used').length;
-    const expiredCount = vouchersData.filter(v => isVoucherExpired(v) && v.status !== 'used').length;
-    console.log('Active:', activeCount, 'Used:', usedCount, 'Expired:', expiredCount);
 });
 </script>
 

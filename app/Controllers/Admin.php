@@ -11,14 +11,20 @@ class Admin extends BaseController
     public function index()
     {
         $model = new VoucherModel();
+        $studentModel = new StudentModel();
 
+        // Stats
         $data['total'] = $model->countAll();
         $data['used'] = $model->where('status', 'used')->countAllResults();
         $data['unused'] = $model->where('status', 'unused')->countAllResults();
         $data['expired'] = $model->where('expiry_date <', date('Y-m-d'))->countAllResults();
-        
-        // Total value
         $data['total_value'] = $model->selectSum('amount')->get()->getRow()->amount ?? 0;
+        
+        // NEW: Recent vouchers (last 5)
+        $data['recent_vouchers'] = $model->orderBy('created_at', 'DESC')->limit(5)->findAll();
+        
+        // NEW: Students list for modal
+        $data['students'] = $studentModel->getStudents();
 
         return view('admin_dashboard', $data);
     }
@@ -82,45 +88,45 @@ class Admin extends BaseController
     }
 
     // Bulk generate for all students
-public function bulkGenerate()
-{
-    if (session('role') != 'admin') {
-        return redirect()->to('/');
-    }
+    public function bulkGenerate()
+    {
+        if (session('role') != 'admin') {
+            return redirect()->to('/');
+        }
 
-    $vendorId = $this->request->getPost('vendor_id');
-    $amount = $this->request->getPost('amount');
-    $expiryDate = $this->request->getPost('expiry_date');
-    
-    $studentModel = new StudentModel();
-    $voucherModel = new VoucherModel();
-    
-    $students = $studentModel->getStudents();
-    $generated = 0;
-    
-    foreach ($students as $student) {
-        $voucher = uniqid("VCH");
-        $hash = hash('sha256', $voucher . $student['username'] . $vendorId . $amount);
+        $vendorId = $this->request->getPost('vendor_id');
+        $amount = $this->request->getPost('amount');
+        $expiryDate = $this->request->getPost('expiry_date');
         
-        $voucherModel->save([
-            'voucher_code' => $voucher,
-            'student_id' => $student['username'],
-            'vendor_id' => $vendorId,
-            'hash_code' => $hash,
-            'amount' => $amount,
-            'status' => 'unused',
-            'expiry_date' => $expiryDate,
-            'generated_by' => session('username')
-        ]);
+        $studentModel = new StudentModel();
+        $voucherModel = new VoucherModel();
         
-        $generated++;
+        $students = $studentModel->getStudents();
+        $generated = 0;
+        
+        foreach ($students as $student) {
+            $voucher = uniqid("VCH");
+            $hash = hash('sha256', $voucher . $student['username'] . $vendorId . $amount);
+            
+            $voucherModel->save([
+                'voucher_code' => $voucher,
+                'student_id' => $student['username'],
+                'vendor_id' => $vendorId,
+                'hash_code' => $hash,
+                'amount' => $amount,
+                'status' => 'unused',
+                'expiry_date' => $expiryDate,
+                'generated_by' => session('username')
+            ]);
+            
+            $generated++;
+        }
+        
+        // Add flashdata for SweetAlert
+        session()->setFlashdata('success', "{$generated} vouchers (RM {$amount} each) generated successfully!");
+        
+        return redirect()->to('/admin/generate');
     }
-    
-    // Add flashdata for SweetAlert
-    session()->setFlashdata('success', "{$generated} vouchers (RM {$amount} each) generated successfully!");
-    
-    return redirect()->to('/admin/generate');
-}
     
     // Generate for specific students (checkbox selection)
     public function generateSelected()
@@ -207,5 +213,18 @@ public function bulkGenerate()
             'voucher' => $voucher,
             'hash' => $hash
         ]);
+    }
+
+    // Get student vouchers via AJAX
+    public function getStudentVouchers($studentId)
+    {
+        if (session('role') != 'admin') {
+            return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(401);
+        }
+        
+        $model = new VoucherModel();
+        $vouchers = $model->where('student_id', $studentId)->findAll();
+        
+        return $this->response->setJSON($vouchers);
     }
 }

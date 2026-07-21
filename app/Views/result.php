@@ -30,7 +30,11 @@ function formatDateTime($datetime) {
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #081225 !important;
+            background-image: 
+                radial-gradient(circle at 10% 0%, rgba(49, 130, 206, 0.25) 0%, transparent 40%),
+                radial-gradient(circle at 90% 10%, rgba(0, 163, 196, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 50% 100%, rgba(26, 54, 93, 0.6) 0%, transparent 60%) !important;
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
             display: flex;
@@ -41,13 +45,14 @@ function formatDateTime($datetime) {
         
         .result-card {
             background: white;
-            border-radius: 32px;
-            padding: 30px;
-            max-width: 500px;
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 480px;
             width: 100%;
             margin: 0 auto;
             animation: fadeInUp 0.5s ease-out;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            text-align: center;
         }
         
         @keyframes fadeInUp {
@@ -325,5 +330,52 @@ function formatDateTime($datetime) {
             </a>
         </div>
     </div>
+
+    <!-- ===== SWEETALERT ===== -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const status = '<?= $status ?>';
+    let icon, title, text;
+    
+    switch(status) {
+        case 'VALID':
+            icon = 'success';
+            title = '✅ Voucher Valid!';
+            text = 'Voucher has been successfully redeemed.';
+            break;
+        case 'USED':
+            icon = 'error';
+            title = '❌ Already Used!';
+            text = 'This voucher has already been redeemed.';
+            break;
+        case 'EXPIRED':
+            icon = 'warning';
+            title = '⚠️ Expired!';
+            text = 'This voucher has passed its expiry date.';
+            break;
+        case 'UNAUTHORIZED':
+            icon = 'error';
+            title = '🚫 Unauthorized!';
+            text = 'You are not authorized to scan this voucher.';
+            break;
+        default:
+            icon = 'error';
+            title = '❌ Invalid!';
+            text = 'This QR code is not a valid voucher.';
+    }
+    
+    Swal.fire({
+        icon: icon,
+        title: title,
+        text: text,
+        confirmButtonColor: '#667eea',
+        confirmButtonText: 'OK',
+        timer: 5000,
+        timerProgressBar: true
+    });
+});
+</script>
 </body>
 </html>

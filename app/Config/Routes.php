@@ -6,14 +6,32 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
-// Public Routes (No auth needed)
-$routes->get('/', 'Auth::login');
+// ============================================
+// PUBLIC ROUTES - NO AUTH NEEDED
+// ============================================
+
+// LANDING PAGE (Root - ganti dari Auth::login ke Landing::index)
+$routes->get('/', 'Landing::index');  // <--- INI YANG PERLU DIUBAH
+
+// Auth Routes
 $routes->get('/login', 'Auth::login');
 $routes->post('/login', 'Auth::doLogin');
-$routes->get('/register', 'Auth::register');      // ADD THIS
-$routes->post('/register', 'Auth::doRegister');   // ADD THIS
+$routes->get('/register', 'Auth::register');
+$routes->post('/register', 'Auth::doRegister');
 
-// Protected Routes
+// Demo Pages (Public - accessible without login)
+$routes->get('/demo', 'Demo::index');
+$routes->get('/demo/data', 'Demo::getDemoData');
+$routes->get('/security-demo', 'SecurityDemo::index');
+
+
+//perfomance testing SHA256 vs SHA512
+$routes->get('voucher/performance-test', 'Voucher::performanceTest');
+
+// ============================================
+// PROTECTED ROUTES - NEED AUTH
+// ============================================
+
 $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('/logout', 'Auth::logout');
     
@@ -38,4 +56,8 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
 
     // API for PWA sync
     $routes->post('/admin/generate-voucher-api', 'Admin::generateVoucherAPI');
+
+    // Add this inside protected routes group
+    $routes->get('/admin/student-vouchers/(:any)', 'Admin::getStudentVouchers/$1');
+
 });

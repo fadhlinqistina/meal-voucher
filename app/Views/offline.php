@@ -48,5 +48,25 @@
             <i class="fas fa-info-circle"></i> Previously loaded vouchers are still available
         </small>
     </div>
+
+    <!-- ===== SWEETALERT ===== -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        icon: 'warning',
+        title: '📶 You are Offline',
+        text: 'Please check your internet connection. Previously loaded vouchers are still available.',
+        confirmButtonColor: '#667eea',
+        confirmButtonText: 'Retry',
+        timer: 5000
+    }).then((result) => {
+        if (result.isConfirmed) {
+            location.reload();
+        }
+    });
+});
+</script>
 </body>
 </html>

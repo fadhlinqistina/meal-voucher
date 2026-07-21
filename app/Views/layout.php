@@ -2,203 +2,156 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Meal Voucher System' ?></title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="manifest" href="/manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Meal Voucher">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a365d">
-    <meta name="msapplication-navbutton-color" content="#1a365d">
-    <meta name="msapplication-TileColor" content="#1a365d">
-    <meta name="application-name" content="Meal Voucher">
-
-    <link rel="apple-touch-icon" href="/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icon-16x16.png">
-
-    <script src="/js/pwa.js"></script>
+    <link rel="icon" type="image/png" href="/images/system-logo.png">
 
     <style>
-        /* Kod * { margin: 0; padding: 0; } TELAH DIBUANG DARI SINI UNTUK MEMBAIKI GRID BOOTSTRAP */
-
-        body {
-            background-color: #f4f7f6; /* Light Slate-Grey */
-            color: #2d3748; /* Charcoal Grey */
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-            padding: 24px 0;
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            min-height: 100vh !important;
+            width: 100% !important;
+            font-family: 'Inter', sans-serif !important;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%) !important;
+            background-attachment: fixed !important;
         }
 
-        /* Card Styles - Flat Card Design */
-        .card-modern, .card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px 1px rgba(0, 0, 0, 0.05);
+        .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+            padding: 20px 20px;
+            max-width: 100% !important;
+        }
+
+        /* Make container fluid */
+        .container {
+            max-width: 100% !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+            margin: 0 !important;
+        }
+
+        /* Card Styles */
+        .card-modern {
+            background: rgba(255, 255, 255, 0.98) !important;
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .card-modern:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Standardized Buttons */
-        .btn {
-            border-radius: 8px;
+        /* Button Styles */
+        .btn-gradient-primary {
+            background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+            border: none;
+            color: white;
             font-weight: 600;
-            padding: 10px 16px;
-            transition: all 0.3s ease;
-            box-shadow: none !important;
+            padding: 12px;
+            border-radius: 10px;
+        }
+        
+        .btn-gradient-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 10px;
         }
 
-        .btn-primary {
-            background-color: #1a365d; /* Deep Corporate Navy */
-            border-color: #1a365d;
-            color: #ffffff;
-        }
-
-        .btn-primary:hover {
-            background-color: #3182ce; /* Electric Blue Accent */
-            border-color: #3182ce;
-        }
-
-        .btn-success {
-            background-color: #00a3c4; /* Cyan Accent */
-            border-color: #00a3c4;
-            color: #ffffff;
-        }
-
-        .btn-success:hover {
-            background-color: #008eb0;
-            border-color: #008eb0;
+        .btn-gradient-danger {
+            background: linear-gradient(135deg, #dc2626 0%, #f87171 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 10px;
         }
 
         /* Form Styles */
         .form-modern {
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
             padding: 12px 16px;
-            transition: all 0.3s ease;
             font-size: 16px;
-            color: #2d3748;
+            background-color: #fff;
+            width: 100%;
+            display: block;
         }
 
         .form-modern:focus {
-            border-color: #3182ce;
-            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+            border-color: #2b6cb0;
+            box-shadow: 0 0 0 4px rgba(43, 108, 176, 0.2);
             outline: none;
         }
 
-        .form-label {
-            color: #1a365d;
-            margin-bottom: 0.5rem; /* Menambahkan sedikit jarak antara label dan input */
-        }
-
-        /* Navbar */
+        /* Navbar Customization */
         .navbar-custom {
-            background: #1a365d; /* Corporate Navy Sidebar/Top Nav */
-            border-radius: 8px;
-            padding: 16px 24px;
-            margin-bottom: 32px;
-            box-shadow: 0 4px 6px 1px rgba(0, 0, 0, 0.05);
-        }
-        
-        .navbar-custom .text-primary {
-            color: #00a3c4 !important; /* Cyan icon on navy bg */
-        }
-        
-        .navbar-custom strong, .navbar-custom .btn-light {
-            color: #ffffff;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 16px;
+            padding: 14px 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .navbar-custom .btn-light {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-        }
-
-        .navbar-custom .btn-light:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-        }
-
-        /* Animation */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 0.4s ease-out;
-        }
-
-        @media (max-width: 768px) {
-            body { padding: 16px; }
-            .card-modern { margin: 0; }
+        .nav-logo {
+            height: 38px;
+            width: auto;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container main-wrapper">
     <?php if(session()->get('username')): ?>
-    <nav class="navbar-custom mb-4 fade-in-up">
+    <nav class="navbar-custom mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <i class="fas fa-shield-alt fa-lg text-primary me-3"></i> 
-                <strong>Meal Voucher System</strong>
+                <img src="/images/system-logo.png" alt="System Logo" class="nav-logo me-2">
+                <strong style="color: #1a365d; font-size: 1.15rem;">Meal Voucher System</strong>
+
+                <a href="/security-demo" class="ms-3 text-decoration-none" style="color: #667eea; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-shield-alt me-1"></i> Security Demo
+            </a>
             </div>
-            <div class="dropdown">
-                <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-user-circle"></i> <?= session()->get('username') ?> 
-                    <span class="badge bg-secondary ms-1" style="background-color: #3182ce !important;"><?= session()->get('role') ?></span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                </ul>
+            
+            <div class="d-flex align-items-center">
+                <div class="dropdown">
+                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" style="border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; background: #f8f9fa;">
+                        <i class="fas fa-user-circle text-secondary me-1"></i> 
+                        <span class="fw-bold" style="color: #1a365d;"><?= session()->get('username') ?></span> 
+                        <span class="badge ms-2" style="background: linear-gradient(135deg, #1a365d, #2b6cb0); color: #fff; border-radius: 4px;"><?= strtoupper(session()->get('role')) ?></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <li><a class="dropdown-item text-danger fw-bold" href="/logout"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
     <?php endif; ?>
 
     <?= $this->renderSection('content') ?>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<?php if(session()->getFlashdata('success')): ?>
-<script>
-    Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: '<?= session()->getFlashdata('success') ?>',
-        confirmButtonColor: '#1a365d',
-        timer: 3000,
-        showConfirmButton: true
-    });
-</script>
-<?php endif; ?>
-
-<?php if(session()->getFlashdata('error')): ?>
-<script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: '<?= session()->getFlashdata('error') ?>',
-        confirmButtonColor: '#e53e3e'
-    });
-</script>
-<?php endif; ?>
 
 </body>
 </html>
