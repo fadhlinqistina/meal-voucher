@@ -32,6 +32,20 @@
         object-fit: cover; 
         width: 100% !important;
     }
+
+    .btn-switch-cam {
+        background: linear-gradient(135deg, #1a365d, #2b6cb0);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-switch-cam:hover {
+        background: linear-gradient(135deg, #122846, #1e4f82);
+        color: white;
+    }
 </style>
 
 <div class="fade-in-up mt-4"> 
@@ -47,14 +61,19 @@
                     <p class="text-muted small">Position the QR code within the frame</p>
                 </div>
 
-                <div id="reader" class="shadow-sm">
+                <div id="reader" class="shadow-sm mb-3">
                     <div class="text-white text-center p-3" id="loading-text">
                         <div class="spinner-border text-light mb-2" role="status"></div>
                         <br><small>Starting Camera...</small>
                     </div>
                 </div>
 
-                <div class="mt-4 p-3 rounded-3" style="background-color: #f8f9fa; border-left: 4px solid #2b6cb0;">
+                <!-- Butang Switch Camera (Muncul secara automatik jika peranti ada >1 kamera) -->
+                <button id="switchCamBtn" onclick="switchCamera()" class="btn btn-switch-cam w-100 py-2 mb-3" style="display: none;">
+                    <i class="fas fa-camera-rotate me-2"></i> Switch Camera (Front / Rear)
+                </button>
+
+                <div class="p-3 rounded-3" style="background-color: #f8f9fa; border-left: 4px solid #2b6cb0;">
                     <small class="text-muted fw-medium d-block mb-0">
                         <i class="fas fa-lightbulb text-warning me-1"></i> 
                         <strong>Pro Tip:</strong> Keep a steady distance so the white QR frame is fully visible.
@@ -74,46 +93,56 @@
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    let lastScanTime = 0;
-    let lastScannedCode = '';
+let html5QrCode;
+let currentFacingMode = "environment"; // Mula dengan kamera belakang
+let lastScanTime = 0;
+let lastScannedCode = '';
+let isScanning = false;
 
-    function onScanSuccess(decodedText) {
-        const now = Date.now();
-        
-        // Prevent double scanning within 3 seconds
-        if (lastScannedCode === decodedText && (now - lastScanTime) < 3000) {
-            return;
-        }
-        
-        lastScanTime = now;
-        lastScannedCode = decodedText;
-        
-        if (navigator.vibrate) navigator.vibrate(200);
-        
-        // Hentikan kamera selepas berjaya scan untuk jimat RAM
-        html5QrCode.stop().then(() => {
-            Swal.fire({
-                title: 'Verifying...',
-                text: 'Mengesahkan identiti QR...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            window.location.href = "/verify/" + decodedText;
-        }).catch(err => {
-            window.location.href = "/verify/" + decodedText;
-        });
+function onScanSuccess(decodedText) {
+    const now = Date.now();
+    
+    // Elak imbasan berganda dalam masa 3 saat
+    if (lastScannedCode === decodedText && (now - lastScanTime) < 3000) {
+        return;
     }
+    
+    lastScanTime = now;
+    lastScannedCode = decodedText;
+    
+    if (navigator.vibrate) navigator.vibrate(200);
+    
+    // Hentikan kamera selepas berjaya scan untuk jimat RAM
+    html5QrCode.stop().then(() => {
+        Swal.fire({
+            title: 'Verifying...',
+            text: 'Mengesahkan identiti QR...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        window.location.href = "/verify/" + decodedText;
+    }).catch(err => {
+        window.location.href = "/verify/" + decodedText;
+    });
+}
 
-    // Menggunakan Core API (Tanpa butang-butang hodoh)
-    const html5QrCode = new Html5Qrcode("reader");
+function startScanner(facingMode) {
     const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
-    // Paksa buka kamera belakang (environment) secara automatik
-    html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
+    html5QrCode.start({ facingMode: facingMode }, config, onScanSuccess)
+    .then(() => {
+        isScanning = true;
+        // Semak jika peranti mempunyai lebih dari 1 kamera (contoh: telefon/iPad)
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length > 1) {
+                document.getElementById('switchCamBtn').style.display = 'block';
+            }
+        }).catch(err => console.log(err));
+    })
     .catch((err) => {
+        isScanning = false;
         document.getElementById('loading-text').innerHTML = `
             <i class="fas fa-video-slash fa-2x text-warning mb-2"></i><br>
             <span class="text-white fw-bold">Camera Access Denied</span><br>
@@ -121,6 +150,33 @@ document.addEventListener("DOMContentLoaded", function() {
         `;
         console.error(err);
     });
+}
+
+function switchCamera() {
+    if (!isScanning) return;
+    
+    // Tukar mod antara 'environment' (belakang) dan 'user' (hadapan)
+    currentFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
+    
+    // Tunjukkan status memuatkan semula
+    document.getElementById('switchCamBtn').disabled = true;
+    document.getElementById('switchCamBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Switching Camera...';
+    
+    html5QrCode.stop().then(() => {
+        isScanning = false;
+        startScanner(currentFacingMode);
+        setTimeout(() => {
+            document.getElementById('switchCamBtn').disabled = false;
+            document.getElementById('switchCamBtn').innerHTML = '<i class="fas fa-camera-rotate me-2"></i> Switch Camera (Front / Rear)';
+        }, 500);
+    }).catch(err => {
+        console.error("Error stopping camera", err);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    html5QrCode = new Html5Qrcode("reader");
+    startScanner(currentFacingMode);
 });
 </script>
 
