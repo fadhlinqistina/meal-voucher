@@ -15,22 +15,19 @@
         border-radius: 20px !important;
     }
 
-    /* Membuang frame putih hodoh dan gantikan dengan frame hitam profesional */
     #reader { 
         border: none !important; 
         border-radius: 16px; 
         overflow: hidden;
         background: #000; 
         min-height: 280px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: relative;
     }
     
     #reader video { 
         border-radius: 16px; 
-        object-fit: cover; 
         width: 100% !important;
+        height: auto !important;
     }
 
     .btn-switch-cam {
@@ -62,13 +59,13 @@
                 </div>
 
                 <div id="reader" class="shadow-sm mb-3">
-                    <div class="text-white text-center p-3" id="loading-text">
+                    <div class="text-white text-center p-4 w-100" id="loading-text">
                         <div class="spinner-border text-light mb-2" role="status"></div>
-                        <br><small>Starting Camera...</small>
+                        <br><small id="status-msg">Requesting camera access...</small>
                     </div>
                 </div>
 
-                <!-- Butang Switch Camera (Muncul secara automatik jika peranti ada >1 kamera) -->
+                <!-- Butang Switch Camera -->
                 <button id="switchCamBtn" onclick="switchCamera()" class="btn btn-switch-cam w-100 py-2 mb-3" style="display: none;">
                     <i class="fas fa-camera-rotate me-2"></i> Switch Camera (Front / Rear)
                 </button>
@@ -94,15 +91,14 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 let html5QrCode;
-let currentFacingMode = "environment"; // Mula dengan kamera belakang
+let cameraDevices = [];
+let currentCameraIndex = 0;
+let isScanning = false;
 let lastScanTime = 0;
 let lastScannedCode = '';
-let isScanning = false;
 
 function onScanSuccess(decodedText) {
     const now = Date.now();
-    
-    // Elak imbasan berganda dalam masa 3 saat
     if (lastScannedCode === decodedText && (now - lastScanTime) < 3000) {
         return;
     }
@@ -112,71 +108,112 @@ function onScanSuccess(decodedText) {
     
     if (navigator.vibrate) navigator.vibrate(200);
     
-    // Hentikan kamera selepas berjaya scan untuk jimat RAM
     html5QrCode.stop().then(() => {
         Swal.fire({
             title: 'Verifying...',
             text: 'Mengesahkan identiti QR...',
             allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+            didOpen: () => { Swal.showLoading(); }
         });
         window.location.href = "/verify/" + decodedText;
-    }).catch(err => {
+    }).catch(() => {
         window.location.href = "/verify/" + decodedText;
     });
 }
 
-function startScanner(facingMode) {
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+async function initScanner() {
+    try {
+        html5QrCode = new Html5Qrcode("reader");
+        
+        // Ambil senarai lengkap perkakasan kamera daripada peranti
+        cameraDevices = await Html5Qrcode.getCameras();
 
-    html5QrCode.start({ facingMode: facingMode }, config, onScanSuccess)
-    .then(() => {
-        isScanning = true;
-        // Semak jika peranti mempunyai lebih dari 1 kamera (contoh: telefon/iPad)
-        Html5Qrcode.getCameras().then(devices => {
-            if (devices && devices.length > 1) {
+        if (cameraDevices && cameraDevices.length > 0) {
+            // Cari indeks kamera belakang (Back/Rear)
+            let rearIndex = cameraDevices.findIndex(dev => 
+                /back|rear|environment|main|0/i.test(dev.label)
+            );
+            
+            // Jika jumpa kamera belakang guna indeks tersebut, jika tidak ambil kamera terakhir
+            currentCameraIndex = (rearIndex !== -1) ? rearIndex : (cameraDevices.length - 1);
+
+            if (cameraDevices.length > 1) {
                 document.getElementById('switchCamBtn').style.display = 'block';
             }
-        }).catch(err => console.log(err));
-    })
-    .catch((err) => {
-        isScanning = false;
-        document.getElementById('loading-text').innerHTML = `
-            <i class="fas fa-video-slash fa-2x text-warning mb-2"></i><br>
-            <span class="text-white fw-bold">Camera Access Denied</span><br>
-            <small class="text-muted">Sila pastikan peranti mempunyai kamera dan 'Permission' dibenarkan.</small>
-        `;
-        console.error(err);
-    });
+
+            await startCamera(cameraDevices[currentCameraIndex].id);
+        } else {
+            showCameraError("Tiada modul kamera dikesan pada peranti ini.");
+        }
+    } catch (err) {
+        console.warn("Failed to get camera list, falling back to constraint mode...", err);
+        startFallback();
+    }
 }
 
-function switchCamera() {
-    if (!isScanning) return;
-    
-    // Tukar mod antara 'environment' (belakang) dan 'user' (hadapan)
-    currentFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
-    
-    // Tunjukkan status memuatkan semula
-    document.getElementById('switchCamBtn').disabled = true;
-    document.getElementById('switchCamBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Switching Camera...';
-    
-    html5QrCode.stop().then(() => {
-        isScanning = false;
-        startScanner(currentFacingMode);
-        setTimeout(() => {
-            document.getElementById('switchCamBtn').disabled = false;
-            document.getElementById('switchCamBtn').innerHTML = '<i class="fas fa-camera-rotate me-2"></i> Switch Camera (Front / Rear)';
-        }, 500);
-    }).catch(err => {
-        console.error("Error stopping camera", err);
-    });
+async function startCamera(deviceId) {
+    const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+    try {
+        await html5QrCode.start(deviceId, config, onScanSuccess);
+        isScanning = true;
+        const loader = document.getElementById('loading-text');
+        if (loader) loader.style.display = 'none';
+    } catch (err) {
+        console.error("Error starting camera ID:", deviceId, err);
+        startFallback();
+    }
+}
+
+async function startFallback() {
+    const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+    try {
+        await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+        isScanning = true;
+        const loader = document.getElementById('loading-text');
+        if (loader) loader.style.display = 'none';
+    } catch (err) {
+        showCameraError("Akses kamera ditolak. Sila benarkan kebenaran (permission) kamera di pelayar anda.");
+    }
+}
+
+async function switchCamera() {
+    const switchBtn = document.getElementById('switchCamBtn');
+    switchBtn.disabled = true;
+    switchBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Switching Camera...';
+
+    try {
+        if (isScanning) {
+            await html5QrCode.stop();
+            isScanning = false;
+        }
+    } catch (e) {
+        console.warn("Stop warning:", e);
+    }
+
+    // Jeda masa (300ms) untuk iOS Safari melepaskan memori perkakasan kamera
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    if (cameraDevices.length > 1) {
+        currentCameraIndex = (currentCameraIndex + 1) % cameraDevices.length;
+        await startCamera(cameraDevices[currentCameraIndex].id);
+    } else {
+        startFallback();
+    }
+
+    switchBtn.disabled = false;
+    switchBtn.innerHTML = '<i class="fas fa-camera-rotate me-2"></i> Switch Camera (Front / Rear)';
+}
+
+function showCameraError(msg) {
+    document.getElementById('loading-text').innerHTML = `
+        <i class="fas fa-video-slash fa-2x text-warning mb-2"></i><br>
+        <span class="text-white fw-bold">Ralat Kamera</span><br>
+        <small class="text-muted">${msg}</small>
+    `;
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    html5QrCode = new Html5Qrcode("reader");
-    startScanner(currentFacingMode);
+    initScanner();
 });
 </script>
 
