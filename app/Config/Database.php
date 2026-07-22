@@ -51,25 +51,28 @@ class Database extends Config
     //     ],
     // ];
 
-        public array $default = [
-        'DSN'      => '',
-        'hostname' => 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
-        'username' => '4J1VXeczE54kood.root',
-        'password' => 'XEmlhsX3FNd83Gxb',
-        'database' => 'test',
-        'DBDriver' => 'MySQLi',
-        'DBPrefix' => '',
-        'pConnect' => false,
-        'DBDebug'  => true,
-        'charset'  => 'utf8mb4',
-        'DBCollat' => 'utf8mb4_general_ci',
-        'swapPre'  => '',
-        'encrypt'  => true, // <--- Tukar daripada false kepada true!
-        'compress' => false,
-        'strictOn' => false,
-        'failover' => [],
-        'port'     => 4000,
-    ];
+    public array $default = [
+    'DSN'      => '',
+    'hostname' => 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
+    'username' => '4J1VXeczE54kood.root',
+    'password' => 'XEmlhsX3FNd83Gxb',
+    'database' => 'test',
+    'DBDriver' => 'MySQLi',
+    'DBPrefix' => '',
+    'pConnect' => false,
+    'DBDebug'  => true,
+    'charset'  => 'utf8mb4',
+    'DBCollat' => 'utf8mb4_general_ci',
+    'swapPre'  => '',
+    'encrypt'  => [
+        'ssl_ca'     => '/etc/ssl/certs/ca-certificates.crt',
+        'ssl_verify' => false,
+    ],
+    'compress' => false,
+    'strictOn' => false,
+    'failover' => [],
+    'port'     => 4000,
+];
 
     //    /**
     //     * Sample database connection for SQLite3.
