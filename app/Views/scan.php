@@ -61,7 +61,7 @@
                 <div id="reader" class="shadow-sm mb-3">
                     <div class="text-white text-center p-4 w-100" id="loading-text">
                         <div class="spinner-border text-light mb-2" role="status"></div>
-                        <br><small id="status-msg">Requesting camera access...</small>
+                        <br><small id="status-msg">Starting camera...</small>
                     </div>
                 </div>
 
@@ -91,8 +91,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 let html5QrCode;
-let cameraDevices = [];
-let currentCameraIndex = 0;
+let currentFacingMode = "environment"; // Mula terus dengan kamera belakang
 let isScanning = false;
 let lastScanTime = 0;
 let lastScannedCode = '';
@@ -121,58 +120,18 @@ function onScanSuccess(decodedText) {
     });
 }
 
-async function initScanner() {
-    try {
-        html5QrCode = new Html5Qrcode("reader");
-        
-        // Ambil senarai lengkap perkakasan kamera daripada peranti
-        cameraDevices = await Html5Qrcode.getCameras();
-
-        if (cameraDevices && cameraDevices.length > 0) {
-            // Cari indeks kamera belakang (Back/Rear)
-            let rearIndex = cameraDevices.findIndex(dev => 
-                /back|rear|environment|main|0/i.test(dev.label)
-            );
-            
-            // Jika jumpa kamera belakang guna indeks tersebut, jika tidak ambil kamera terakhir
-            currentCameraIndex = (rearIndex !== -1) ? rearIndex : (cameraDevices.length - 1);
-
-            if (cameraDevices.length > 1) {
-                document.getElementById('switchCamBtn').style.display = 'block';
-            }
-
-            await startCamera(cameraDevices[currentCameraIndex].id);
-        } else {
-            showCameraError("Tiada modul kamera dikesan pada peranti ini.");
-        }
-    } catch (err) {
-        console.warn("Failed to get camera list, falling back to constraint mode...", err);
-        startFallback();
-    }
-}
-
-async function startCamera(deviceId) {
+async function startScanner(mode) {
     const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+    const loader = document.getElementById('loading-text');
+    
     try {
-        await html5QrCode.start(deviceId, config, onScanSuccess);
+        await html5QrCode.start({ facingMode: mode }, config, onScanSuccess);
         isScanning = true;
-        const loader = document.getElementById('loading-text');
         if (loader) loader.style.display = 'none';
+        document.getElementById('switchCamBtn').style.display = 'block';
     } catch (err) {
-        console.error("Error starting camera ID:", deviceId, err);
-        startFallback();
-    }
-}
-
-async function startFallback() {
-    const config = { fps: 10, qrbox: { width: 220, height: 220 } };
-    try {
-        await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
-        isScanning = true;
-        const loader = document.getElementById('loading-text');
-        if (loader) loader.style.display = 'none';
-    } catch (err) {
-        showCameraError("Akses kamera ditolak. Sila benarkan kebenaran (permission) kamera di pelayar anda.");
+        console.error("Error starting camera mode:", mode, err);
+        showCameraError("Akses kamera ditolak atau tidak disokong pada peranti ini.");
     }
 }
 
@@ -190,15 +149,13 @@ async function switchCamera() {
         console.warn("Stop warning:", e);
     }
 
-    // Jeda masa (300ms) untuk iOS Safari melepaskan memori perkakasan kamera
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // Jeda masa (250ms) untuk perkakasan kamera melepaskan memori
+    await new Promise(resolve => setTimeout(resolve, 250));
 
-    if (cameraDevices.length > 1) {
-        currentCameraIndex = (currentCameraIndex + 1) % cameraDevices.length;
-        await startCamera(cameraDevices[currentCameraIndex].id);
-    } else {
-        startFallback();
-    }
+    // Tukar mod secara terus: 'environment' <-> 'user' (Pintas kanta ekstra)
+    currentFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
+
+    await startScanner(currentFacingMode);
 
     switchBtn.disabled = false;
     switchBtn.innerHTML = '<i class="fas fa-camera-rotate me-2"></i> Switch Camera (Front / Rear)';
@@ -213,7 +170,8 @@ function showCameraError(msg) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    initScanner();
+    html5QrCode = new Html5Qrcode("reader");
+    startScanner(currentFacingMode);
 });
 </script>
 
