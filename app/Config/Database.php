@@ -51,7 +51,7 @@ class Database extends Config
     //     ],
     // ];
 
-    public array $default = [
+        public array $default = [
         'DSN'      => '',
         'hostname' => 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
         'username' => '4J1VXeczE54kood.root',
@@ -64,7 +64,7 @@ class Database extends Config
         'charset'  => 'utf8mb4',
         'DBCollat' => 'utf8mb4_general_ci',
         'swapPre'  => '',
-        'encrypt'  => false,
+        'encrypt'  => true, // <--- Tukar daripada false kepada true!
         'compress' => false,
         'strictOn' => false,
         'failover' => [],
